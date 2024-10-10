@@ -64,6 +64,23 @@ class _FormScreenState extends State<FormScreen> {
                 }
               },
             ),
+            TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'จำนวนเงิน',
+                  ),
+                  keyboardType: TextInputType.number,
+                  controller: amountController,
+                  validator: (String? input) {
+                    try {
+                      double amount = double.parse(input!);
+                      if (amount < 0) {
+                        return 'กรุณากรอกข้อมูลมากกว่า 0';
+                      }
+                    } catch (e) {
+                      return 'กรุณากรอกข้อมูลเป็นตัวเลข';
+                    }
+                  },
+                ),
             TextButton(
               child: const Text('บันทึก'),
               onPressed: () {
