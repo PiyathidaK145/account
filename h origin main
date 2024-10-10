@@ -1,4 +1,10 @@
-[33mcommit f6ddc1294828cc936994abec36e6415dd115de04[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+[33mcommit b5c7b74061733c564a2a8277d726521e9e3ecb6f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: piyathidaK145 <piyathidak65@nu.ac.th>
+Date:   Fri Oct 11 00:19:32 2024 +0700
+
+    frist commit
+
+[33mcommit f6ddc1294828cc936994abec36e6415dd115de04[m[33m ([m[1;31morigin/main[m[33m)[m
 Merge: fd0b3d4 50612f2
 Author: piyathidaK145 <piyathidak65@nu.ac.th>
 Date:   Thu Oct 10 23:59:39 2024 +0700
@@ -17,7 +23,7 @@ Date:   Thu Oct 10 22:44:42 2024 +0700
 
     first commit
 
-[33mcommit 50612f21d01b784d7f3ea54ce795cfc475a7a022[m[33m ([m[1;31morigin/main[m[33m)[m
+[33mcommit 50612f21d01b784d7f3ea54ce795cfc475a7a022[m
 Author: piyathidaK145 <piyathidak65@nu.ac.th>
 Date:   Thu Oct 10 17:51:10 2024 +0700
 
