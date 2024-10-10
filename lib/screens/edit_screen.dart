@@ -78,7 +78,7 @@ class _EditScreenState extends State<EditScreen> {
                     }
                   },
                 ),
-                /*TextFormField(
+                TextFormField(
                   decoration: const InputDecoration(
                     labelText: 'จำนวนเงิน',
                   ),
@@ -94,7 +94,7 @@ class _EditScreenState extends State<EditScreen> {
                       return 'กรุณากรอกข้อมูลเป็นตัวเลข';
                     }
                   },
-                ),*/
+                ),
                 TextButton(
                     child: const Text('แก้ไขข้อมูล'),
                     onPressed: () {
