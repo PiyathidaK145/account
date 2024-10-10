@@ -42,6 +42,16 @@ class _FormScreenState extends State<FormScreen> {
         key: formKey,
         child: Column(
           children: [
+            // Display the selected date
+            ListTile(
+              title: Text(
+                selectedDate == null
+                    ? 'เลือกวันที่'
+                    : 'วันที่: ${selectedDate!.toLocal()}'.split(' ')[0], // Display date in 'yyyy-mm-dd' format
+              ),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: () => _selectDate(context), // Show date picker on tap
+            ),
             TextFormField(
               decoration: const InputDecoration(
                 labelText: 'ชื่อรายการ',
@@ -53,33 +63,6 @@ class _FormScreenState extends State<FormScreen> {
                   return 'กรุณากรอกข้อมูล';
                 }
               },
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'จำนวนเงิน',
-              ),
-              keyboardType: TextInputType.number,
-              controller: amountController,
-              validator: (String? input) {
-                try {
-                  double amount = double.parse(input!);
-                  if (amount < 0) {
-                    return 'กรุณากรอกข้อมูลมากกว่า 0';
-                  }
-                } catch (e) {
-                  return 'กรุณากรอกข้อมูลเป็นตัวเลข';
-                }
-              },
-            ),
-            // Display the selected date
-            ListTile(
-              title: Text(
-                selectedDate == null
-                    ? 'เลือกวันที่'
-                    : 'วันที่: ${selectedDate!.toLocal()}'.split(' ')[0], // Display date in 'yyyy-mm-dd' format
-              ),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: () => _selectDate(context), // Show date picker on tap
             ),
             TextButton(
               child: const Text('บันทึก'),
@@ -106,6 +89,7 @@ class _FormScreenState extends State<FormScreen> {
                       },
                     ),
                   );
+                
                 }
               },
             ),
