@@ -1,6 +1,6 @@
-import 'package:account/databases/transaction_db.dart';
+import 'package:astro_note/databases/transaction_db.dart';
 import 'package:flutter/foundation.dart';
-import 'package:account/models/transactions.dart';
+import 'package:astro_note/models/transactions.dart';
 
 class TransactionProvider with ChangeNotifier {
   List<Transactions> transactions = [];

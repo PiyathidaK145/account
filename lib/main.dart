@@ -1,8 +1,8 @@
-import 'package:account/screens/form_screen.dart';
-import 'package:account/screens/home_screen.dart';
+import 'package:astro_note/screens/form_screen.dart';
+import 'package:astro_note/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:account/provider/transaction_provider.dart';
+import 'package:astro_note/provider/transaction_provider.dart';
 
 void main() {
   runApp(const MyApp());

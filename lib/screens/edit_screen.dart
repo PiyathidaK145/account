@@ -1,6 +1,6 @@
-import 'package:account/main.dart';
-import 'package:account/models/transactions.dart';
-import 'package:account/provider/transaction_provider.dart';
+import 'package:astro_note/main.dart';
+import 'package:astro_note/models/transactions.dart';
+import 'package:astro_note/provider/transaction_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

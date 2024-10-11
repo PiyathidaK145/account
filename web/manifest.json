@@ -1,6 +1,6 @@
 {
-    "name": "account",
-    "short_name": "account",
+    "name": "astro_note",
+    "short_name": "astro_note",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

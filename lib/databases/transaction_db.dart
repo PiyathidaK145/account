@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:account/models/transactions.dart';
+import 'package:astro_note/models/transactions.dart';
 
 
 class TransactionDB{

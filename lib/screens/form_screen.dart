@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:account/models/transactions.dart';
-import 'package:account/provider/transaction_provider.dart';
-import 'package:account/main.dart';
+import 'package:astro_note/models/transactions.dart';
+import 'package:astro_note/provider/transaction_provider.dart';
+import 'package:astro_note/main.dart';
 import 'package:intl/intl.dart'; // Import intl for date formatting
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
