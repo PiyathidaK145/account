@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:astro_note/models/transactions.dart';
-import 'package:astro_note/provider/transaction_provider.dart';
-import 'package:astro_note/main.dart';
+import 'package:account/models/transactions.dart';
+import 'package:account/provider/transaction_provider.dart';
+import 'package:account/main.dart';
 import 'package:intl/intl.dart'; // Import intl for date formatting
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -16,14 +16,35 @@ class FormScreen extends StatefulWidget {
 
 class _FormScreenState extends State<FormScreen> {
   final formKey = GlobalKey<FormState>();
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
-  final contactController = TextEditingController(); // For contact information
-  final descriptionController = TextEditingController(); // For description
-  final fieldController = TextEditingController(); // For scientific field
+  late TextEditingController titleController;
+  late TextEditingController amountController;
+  late TextEditingController contactController; 
+  late TextEditingController descriptionController; 
+  late TextEditingController fieldController; 
 
   DateTime? selectedDate;
+  TimeOfDay? selectedTime; // เพิ่มตัวแปรสำหรับเวลา
   File? selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    titleController = TextEditingController();
+    amountController = TextEditingController();
+    contactController = TextEditingController();
+    descriptionController = TextEditingController();
+    fieldController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    amountController.dispose();
+    contactController.dispose();
+    descriptionController.dispose();
+    fieldController.dispose();
+    super.dispose();
+  }
 
   // Method to show date picker
   Future<void> _selectDate(BuildContext context) async {
@@ -40,15 +61,45 @@ class _FormScreenState extends State<FormScreen> {
     }
   }
 
-  // Method to pick image from gallery
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+  // Method to show time picker
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: selectedTime ?? TimeOfDay.now(),
+    );
+    if (picked != null && picked != selectedTime) {
       setState(() {
-        selectedImage = File(pickedFile.path);
+        selectedTime = picked;
       });
     }
+  }
+
+  // Method to pick image from gallery
+  Future<void> _pickImage() async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          selectedImage = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking image: $e')),
+      );
+    }
+  }
+
+  void _clearForm() {
+    titleController.clear();
+    amountController.clear();
+    contactController.clear();
+    descriptionController.clear();
+    fieldController.clear();
+    selectedImage = null;
+    selectedDate = null;
+    selectedTime = null; // รีเซ็ตเวลา
   }
 
   @override
@@ -67,61 +118,20 @@ class _FormScreenState extends State<FormScreen> {
                 title: Text(
                   selectedDate == null
                       ? 'เลือกวันที่'
-                      : 'วันที่: ${DateFormat('dd/MM/yyyy').format(selectedDate!)}', // Format date as 'dd/MM/yyyy'
+                      : 'วันที่: ${DateFormat('dd/MM/yyyy').format(selectedDate!)}', 
                 ),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: () => _selectDate(context),
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'ชื่อรายการ'),
-                controller: titleController,
-                validator: (String? str) {
-                  if (str!.isEmpty) {
-                    return 'กรุณากรอกข้อมูล';
-                  }
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'จำนวนเงิน'),
-                keyboardType: TextInputType.number,
-                controller: amountController,
-                validator: (String? input) {
-                  try {
-                    double amount = double.parse(input!);
-                    if (amount < 0) {
-                      return 'กรุณากรอกข้อมูลมากกว่า 0';
-                    }
-                  } catch (e) {
-                    return 'กรุณากรอกข้อมูลเป็นตัวเลข';
-                  }
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'ช่องทางการติดต่อ'),
-                controller: contactController,
-                validator: (String? str) {
-                  if (str!.isEmpty) {
-                    return 'กรุณากรอกข้อมูลการติดต่อ';
-                  }
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'รายละเอียด'),
-                controller: descriptionController,
-                validator: (String? str) {
-                  if (str!.isEmpty) {
-                    return 'กรุณากรอกข้อมูลรายละเอียด';
-                  }
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'ศาสตร์ที่ใช้'),
-                controller: fieldController,
-                validator: (String? str) {
-                  if (str!.isEmpty) {
-                    return 'กรุณากรอกข้อมูลศาสตร์ที่ใช้';
-                  }
-                },
+              // Display the selected time
+              ListTile(
+                title: Text(
+                  selectedTime == null
+                      ? 'เลือกเวลา'
+                      : 'เวลา: ${selectedTime!.format(context)}', // Format time
+                ),
+                trailing: const Icon(Icons.access_time),
+                onTap: () => _selectTime(context),
               ),
               const SizedBox(height: 20),
               // Image picker button
@@ -131,36 +141,124 @@ class _FormScreenState extends State<FormScreen> {
                       label: const Text('อัพโหลดรูปภาพ'),
                       onPressed: _pickImage,
                     )
-                  : Image.file(
-                      selectedImage!,
-                      height: 150,
-                      width: 150,
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        selectedImage!,
+                        height: 150,
+                        width: 150,
+                        fit: BoxFit.cover,
+                      ),
                     ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'ชื่อหมอดู'),
+                controller: titleController,
+                validator: (String? str) {
+                  if (str == null || str.isEmpty) {
+                    return 'กรุณากรอกข้อมูล';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'ช่องทางการนัดหมาย'),
+                controller: contactController,
+                validator: (String? str) {
+                  if (str == null || str.isEmpty) {
+                    return 'กรุณากรอกข้อมูลการติดต่อ';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'ศาสตร์ที่ใช้'),
+                controller: fieldController,
+                validator: (String? str) {
+                  if (str == null || str.isEmpty) {
+                    return 'กรุณากรอกข้อมูลศาสตร์ที่ใช้';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'โปรราคาเท่าไหร่'),
+                keyboardType: TextInputType.number,
+                controller: amountController,
+                validator: (String? input) {
+                  if (input == null || input.isEmpty) {
+                    return 'กรุณากรอกข้อมูล';
+                  }
+                  try {
+                    double amount = double.parse(input);
+                    if (amount < 0) {
+                      return 'กรุณากรอกข้อมูลมากกว่า 0';
+                    }
+                  } catch (e) {
+                    return 'กรุณากรอกข้อมูลเป็นตัวเลข';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'รายละเอียด'),
+                controller: descriptionController,
+                validator: (String? str) {
+                  if (str == null || str.isEmpty) {
+                    return 'กรุณากรอกข้อมูลรายละเอียด';
+                  }
+                  return null;
+                },
+              ),
               TextButton(
                 child: const Text('บันทึก'),
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
+                    // ตรวจสอบว่ามีการเลือกวันที่และเวลา
+                    if (selectedDate == null || selectedTime == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('กรุณาเลือกวันที่และเวลา')),
+                      );
+                      return;
+                    }
+
+                    // สร้าง DateTime ใหม่จากวันที่และเวลา
+                    DateTime combinedDateTime = DateTime(
+                      selectedDate!.year,
+                      selectedDate!.month,
+                      selectedDate!.day,
+                      selectedTime!.hour,
+                      selectedTime!.minute,
+                    );
+
                     // Create transaction data object with selected data and image
                     var statement = Transactions(
                       keyID: null,
                       title: titleController.text,
                       amount: double.parse(amountController.text),
-                      date: selectedDate ?? DateTime.now(),
+                      date: combinedDateTime, // ใช้วันที่และเวลาใหม่
                       contact: contactController.text,
                       description: descriptionController.text,
                       field: fieldController.text,
-                      image: selectedImage != null ? selectedImage!.path : null,
+                      image: selectedImage?.path,
                     );
 
                     var provider = Provider.of<TransactionProvider>(context, listen: false);
                     provider.addTransaction(statement);
+
+                    // Clear form fields after submission
+                    _clearForm();
+
+                    // Show success message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('บันทึกข้อมูลสำเร็จ!')),
+                    );
 
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         fullscreenDialog: true,
                         builder: (context) {
-                          return MyHomePage();
+                          return const MyHomePage();
                         },
                       ),
                     );
