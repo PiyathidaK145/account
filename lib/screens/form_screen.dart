@@ -18,12 +18,12 @@ class _FormScreenState extends State<FormScreen> {
   final formKey = GlobalKey<FormState>();
   late TextEditingController titleController;
   late TextEditingController amountController;
-  late TextEditingController contactController; 
+  late TextEditingController contactController;
   late TextEditingController descriptionController; 
   late TextEditingController fieldController; 
 
   DateTime? selectedDate;
-  TimeOfDay? selectedTime; // เพิ่มตัวแปรสำหรับเวลา
+  TimeOfDay? selectedTime; 
   File? selectedImage;
 
   @override
@@ -99,7 +99,7 @@ class _FormScreenState extends State<FormScreen> {
     fieldController.clear();
     selectedImage = null;
     selectedDate = null;
-    selectedTime = null; // รีเซ็ตเวลา
+    selectedTime = null;
   }
 
   @override
@@ -213,7 +213,6 @@ class _FormScreenState extends State<FormScreen> {
                 child: const Text('บันทึก'),
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    // ตรวจสอบว่ามีการเลือกวันที่และเวลา
                     if (selectedDate == null || selectedTime == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('กรุณาเลือกวันที่และเวลา')),
@@ -221,7 +220,6 @@ class _FormScreenState extends State<FormScreen> {
                       return;
                     }
 
-                    // สร้าง DateTime ใหม่จากวันที่และเวลา
                     DateTime combinedDateTime = DateTime(
                       selectedDate!.year,
                       selectedDate!.month,
@@ -230,12 +228,11 @@ class _FormScreenState extends State<FormScreen> {
                       selectedTime!.minute,
                     );
 
-                    // Create transaction data object with selected data and image
                     var statement = Transactions(
                       keyID: null,
                       title: titleController.text,
                       amount: double.parse(amountController.text),
-                      date: combinedDateTime, // ใช้วันที่และเวลาใหม่
+                      date: combinedDateTime, 
                       contact: contactController.text,
                       description: descriptionController.text,
                       field: fieldController.text,
@@ -245,10 +242,8 @@ class _FormScreenState extends State<FormScreen> {
                     var provider = Provider.of<TransactionProvider>(context, listen: false);
                     provider.addTransaction(statement);
 
-                    // Clear form fields after submission
                     _clearForm();
 
-                    // Show success message
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('บันทึกข้อมูลสำเร็จ!')),
                     );
