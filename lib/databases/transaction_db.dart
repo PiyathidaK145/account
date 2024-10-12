@@ -21,22 +21,28 @@ class TransactionDB {
   }
 
   // Insert a new transaction into the database
-  Future<int> insertDatabase(Transactions statement) async {
-    var db = await openDatabase();
-    var store = intMapStoreFactory.store('expense');
-
+ Future<int> insertDatabase(Transactions statement) async {
+  var db = await openDatabase();
+  var store = intMapStoreFactory.store('expense');
+  try {
     var keyID = await store.add(db, {
       "title": statement.title,
       "amount": statement.amount,
       "date": statement.date.toIso8601String(),
-      "contact": statement.contact,        // New field for contact
-      "description": statement.description, // New field for description
-      "field": statement.field,            // New field for scientific field
-      "image": statement.image,            // Optional image field
+      "contact": statement.contact,
+      "description": statement.description,
+      "field": statement.field,
+      "image": statement.image,
     });
-    db.close();
     return keyID;
+  } catch (e) {
+    print('Error inserting transaction: $e');
+    return -1; // หรือจัดการข้อผิดพลาดตามที่จำเป็น
+  } finally {
+    await db.close();
   }
+}
+
 
   // Load all transactions from the database
   Future<List<Transactions>> loadAllData() async {

@@ -25,6 +25,7 @@ class _FormScreenState extends State<FormScreen> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime; 
   File? selectedImage;
+  bool isSaving = false;
 
   @override
   void initState() {
@@ -134,22 +135,22 @@ class _FormScreenState extends State<FormScreen> {
                 onTap: () => _selectTime(context),
               ),
               const SizedBox(height: 20),
-              // Image picker button
-              selectedImage == null
-                  ? TextButton.icon(
-                      icon: const Icon(Icons.image),
-                      label: const Text('อัพโหลดรูปภาพ'),
-                      onPressed: _pickImage,
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        selectedImage!,
-                        height: 150,
-                        width: 150,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+              if (selectedImage != null) 
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.file(
+                    selectedImage!,
+                    height: 150,
+                    width: 150,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              else 
+                TextButton.icon(
+                  icon: const Icon(Icons.image),
+                  label: const Text('อัพโหลดรูปภาพ'),
+                  onPressed: _pickImage,
+                ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'ชื่อหมอดู'),
                 controller: titleController,
@@ -210,55 +211,66 @@ class _FormScreenState extends State<FormScreen> {
                 },
               ),
               TextButton(
-                child: const Text('บันทึก'),
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    if (selectedDate == null || selectedTime == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('กรุณาเลือกวันที่และเวลา')),
-                      );
-                      return;
-                    }
+                child: isSaving 
+                    ? CircularProgressIndicator() 
+                    : const Text('บันทึก'),
+                onPressed: isSaving 
+                    ? null 
+                    : () async {
+                        if (formKey.currentState!.validate()) {
+                          if (selectedDate == null || selectedTime == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('กรุณาเลือกวันที่และเวลา')),
+                            );
+                            return;
+                          }
 
-                    DateTime combinedDateTime = DateTime(
-                      selectedDate!.year,
-                      selectedDate!.month,
-                      selectedDate!.day,
-                      selectedTime!.hour,
-                      selectedTime!.minute,
-                    );
+                          DateTime combinedDateTime = DateTime(
+                            selectedDate!.year,
+                            selectedDate!.month,
+                            selectedDate!.day,
+                            selectedTime!.hour,
+                            selectedTime!.minute,
+                          );
 
-                    var statement = Transactions(
-                      keyID: null,
-                      title: titleController.text,
-                      amount: double.parse(amountController.text),
-                      date: combinedDateTime, 
-                      contact: contactController.text,
-                      description: descriptionController.text,
-                      field: fieldController.text,
-                      image: selectedImage?.path,
-                    );
+                          var statement = Transactions(
+                            keyID: null,
+                            title: titleController.text,
+                            amount: double.parse(amountController.text),
+                            date: combinedDateTime, 
+                            contact: contactController.text,
+                            description: descriptionController.text,
+                            field: fieldController.text,
+                            image: selectedImage?.path,
+                          );
 
-                    var provider = Provider.of<TransactionProvider>(context, listen: false);
-                    provider.addTransaction(statement);
+                          var provider = Provider.of<TransactionProvider>(context, listen: false);
+                          setState(() {
+                            isSaving = true; // เริ่มการบันทึก
+                          });
 
-                    _clearForm();
+                          await provider.addTransaction(statement); // รอให้บันทึกเสร็จ
+                          _clearForm();
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('บันทึกข้อมูลสำเร็จ!')),
-                    );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('บันทึกข้อมูลสำเร็จ!')),
+                          );
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        fullscreenDialog: true,
-                        builder: (context) {
-                          return const MyHomePage();
-                        },
-                      ),
-                    );
-                  }
-                },
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              fullscreenDialog: true,
+                              builder: (context) {
+                                return const MyHomePage();
+                              },
+                            ),
+                          );
+
+                          setState(() {
+                            isSaving = false; // สิ้นสุดการบันทึก
+                          });
+                        }
+                      },
               ),
             ],
           ),
